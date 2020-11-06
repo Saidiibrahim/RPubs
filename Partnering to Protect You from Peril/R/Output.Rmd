@@ -16,7 +16,31 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r cars}
-summary(cars)
+
+# load the libraries
+library(readr)
+library(dplyr)
+library(igraph)
+library(ggraph)
+library(RCurl)
+
+# Import the edgelist from the naccho2016clean.csv file
+edges <- getURL("https://github.com/Saidiibrahim/RPubs/blob/main/Partnering%20to%20Protect%20You%20from%20Peril/datasets/naccho2016clean.csv")
+
+health_dep_edges <- read_csv(file = edges)
+
+# Import the attributes from the naccho2016att.csv file
+nodes <- getURL("https://github.com/Saidiibrahim/RPubs/blob/main/Partnering%20to%20Protect%20You%20from%20Peril/datasets/naccho2016att.csv")
+
+health_dep_nodes <- read_csv(file = nodes)
+
+# Merge the edgelist and attributes into a network object
+health_dep_net <- graph_from_data_frame(d = health_dep_edges, 
+                       vertices = health_dep_nodes, 
+                       directed = FALSE)
+
+# Show the network object
+health_dep_net
 ```
 
 ## Including Plots
