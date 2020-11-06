@@ -9,13 +9,17 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Ebola, hurricanes, and forest fires, oh my
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Have you ever wondered who keeps an eye on your favorite restaurants to make sure your food is safe? Or removes old tires filled with standing water that could attract mosquitos? In the US, these tasks are among the services provided by over 2,500 local health departments serving all communities across the country. In addition to basic services that keep us safe on a daily basis, local health departments also prepare for and respond to large-scale national, regional, and local emergencies.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Health department size and service provision vary widely depending on the needs and size of its constituent population, which can range from a few hundred to a few million people. Every few years, the National Association of County and City Health Officials (NACCHO) surveys health departments about their resources and the services they provide to constituents.
 
-```{r cars}
+In 2016, the survey asked each health department to identify five health departments they connected to the most. Connections among health departments facilitate information sharing and coordination of services and are especially important during public health emergencies. The Ebola outbreak in 2014, Hurricane Harvey in 2017, and the California wildfires in 2018 are examples of national, regional, and state emergencies requiring coordination of public health services.
+
+To understand the partnerships underlying the public health response to emergencies, let's examine the network of local health departments and identify key health departments and gaps in the network at the national, regional, and state levels.
+
+```{r data_upload}
 
 # load the libraries
 library(readr)
@@ -25,14 +29,10 @@ library(ggraph)
 library(RCurl)
 
 # Import the edgelist from the naccho2016clean.csv file
-edges <- getURL("https://github.com/Saidiibrahim/RPubs/blob/main/Partnering%20to%20Protect%20You%20from%20Peril/datasets/naccho2016clean.csv")
-
-health_dep_edges <- read_csv(file = edges)
+health_dep_edges <- read_csv(file = "~/Desktop/GitHub Repositories/RPubs/Partnering to Protect You from Peril/datasets/naccho2016clean.csv")
 
 # Import the attributes from the naccho2016att.csv file
-nodes <- getURL("https://github.com/Saidiibrahim/RPubs/blob/main/Partnering%20to%20Protect%20You%20from%20Peril/datasets/naccho2016att.csv")
-
-health_dep_nodes <- read_csv(file = nodes)
+health_dep_nodes <- read_csv(file = "~/Desktop/GitHub Repositories/RPubs/Partnering to Protect You from Peril/datasets/naccho2016att.csv")
 
 # Merge the edgelist and attributes into a network object
 health_dep_net <- graph_from_data_frame(d = health_dep_edges, 
@@ -43,12 +43,70 @@ health_dep_net <- graph_from_data_frame(d = health_dep_edges,
 health_dep_net
 ```
 
-## Including Plots
+## Cleaning up the network object
 
-You can also embed plots, for example:
+With more than 2,500 health departments in the US, the national network of partnerships may be large and complex. The first step in any analysis is to clean up the data. The health department network shows partnerships, which would logically be represented by a single link between any two health departments that partner. Local health departments do not typically partner with themselves, so there would be no loops in the network.
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r cleaning, echo=FALSE}
+# Check for loops and multiples
+is_simple(health_dep_net)
+
+# Remove loops and multiples
+health_dep_net <- simplify(health_dep_net, 
+                       remove.multiple = TRUE, 
+                       remove.loops = TRUE)
+
+# Check for loops and multiples again
+is_simple(health_dep_net)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+##  Getting to know the network
+After cleaning up the network object, the next step is some exploratory analysis to get to know the network.
+```{r example, echo=FALSE}
+# Count the number of vertices in the network
+( num_health_dep <- vcount(graph = health_dep_net) )
+
+# Count the number of edges in the network
+( num_connections <- ecount(graph = health_dep_net) )
+
+# Compute network density 
+( net_density <- edge_density(graph = health_dep_net, loops = FALSE) )
+```
+## Connections facilitating coordination nationwide
+In 2014-2016 there was an outbreak of Ebola in West Africa. In late 2014, a case of Ebola was identified in Texas and health departments nationwide worked to prepare for the potential of a widespread outbreak. While this potential was never realized (there were just 4 cases eventually diagnosed in the US), it isn't difficult to imagine a large-scale infectious disease outbreak that requires coordination across the country to protect the uninfected and treat the infected.
+
+Central network members can facilitate or control the spread of information and other resources and are often considered key or important network members. There are several different types of centrality. Two of the more commonly used are degree centrality and betweenness centrality. Degree centrality is a count of the number of connections a node has. Betweenness centrality quantifies the extent to which a node lies in the shortest path between any two other nodes in the network, often playing a bridging role.
+
+The nodes with the highest degree and betweenness centrality may be key to spreading information and coordinating efforts nationwide. Nodes that have both high degree and high betweenness may be especially important.
+```{r connections}
+health_dep_nodes$health_dep_degree <- degree(health_dep_net)
+
+# List the health departments with the highest degree
+arrange(health_dep_nodes, -health_dep_degree)
+
+# Identify bridges nodes using betweenness
+health_dep_nodes$health_dep_between <- betweenness(health_dep_net)
+
+# List the health departments with the highest betweenness
+arrange(health_dep_nodes, -health_dep_between)
+```
+## Connections for regional coordination
+Some disasters are more regional than national and would not require all health departments across the country to be involved. For example, in 2017, Hurricane Harvey poured between 10 and 50 inches of rain in a short period of time across parts of southeastern Texas and southwestern Louisiana. This resulted in widespread flooding across the region and tested the emergency preparedness of health departments and others. Let's use network methods to identify key players and gaps in the network across Texas and Louisiana that might suggest new connections to prepare for future events.
+```{r connections_regional}
+# Subset the network so it includes TX, LA 
+region_net <- induced_subgraph(graph = health_dep_net, 
+                   vids = which(V(health_dep_net)$state %in% c('LA', 'TX')))
+
+# Find the number of vertices (i.e., network size) using vcount()
+vcount(region_net)
+
+# Use edge_density() to find the density of region.net
+edge_density(region_net)
+
+# Plot the network with theme_graph
+lhd_net_theme <- ggraph(graph = region_net, layout = "with_kk") +
+  geom_edge_link() +
+  geom_node_point(aes(colour = state)) +
+  theme_graph()
+lhd_net_theme
+```
