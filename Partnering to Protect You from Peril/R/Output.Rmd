@@ -4,16 +4,12 @@ author: "Ibrahim Saidi"
 date: "06/11/2020"
 output: 
   html_document:
-    theme: cosmo
-    highlight: monochrome
     toc: true
-    toc_float: false
-    toc_depth: 4
-    code_folding: hide
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 ```
 
 ## Ebola, hurricanes, and forest fires, oh my
@@ -54,7 +50,7 @@ health_dep_net
 
 With more than 2,500 health departments in the US, the national network of partnerships may be large and complex. The first step in any analysis is to clean up the data. The health department network shows partnerships, which would logically be represented by a single link between any two health departments that partner. Local health departments do not typically partner with themselves, so there would be no loops in the network.
 
-```{r cleaning, echo=FALSE}
+```{r cleaning}
 # Check for loops and multiples
 is_simple(health_dep_net)
 
@@ -69,7 +65,7 @@ is_simple(health_dep_net)
 
 ##  Getting to know the network
 After cleaning up the network object, the next step is some exploratory analysis to get to know the network.
-```{r example, echo=FALSE}
+```{r example}
 # Count the number of vertices in the network
 ( num_health_dep <- vcount(graph = health_dep_net) )
 
