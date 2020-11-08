@@ -1,0 +1,47 @@
+---
+title: "Drunken Datetimes in Ames, Iowa"
+author: "Ibrahim Saidi"
+date: "08/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+## Just how thirsty is Thursday?
+
+![](/Users/ibrahim_saidi/Desktop/GitHub Repositories/RPubs/Drunken Datetimes in Ames, Iowa/images/beer_image.jpeg)
+
+We have previously explored some breathalyzer test data from Ames, Iowa, USA, here. Now, we focus on working with the date and time information in the data. As a college town (Go Cyclones!), Ames has had its fair share of alcohol-related incidents. (For example, Google "VEISHEA riots 2014".) In this project, we examine breath alcohol test data in Ames from January 2013 to December 2017 that is published by the State of Iowa, specifically focusing on when these tests are administered.
+
+The data file "breathalcoholdatetimes.csv" contains 1,556 observations from breath alcohol tests collected by the Ames and Iowa State University Police Departments. The columns in this dataset are:
+
+DateTime - date & time of test (datetime, "America/Chicago")
+Location - who administered the test, Ames PD or ISU PD? (char.)
+Gender - gender (M,F) of person being tested (char.)
+Res1 - first breath alcohol reading (num.)
+Res2 - second breath alcohol reading (num.)
+First, we create a bar chart showing number of tests by day of the week to see when the most tests were done.
+
+```{r bar_chart}
+# load necessary packages 
+library("tidyverse")
+library("lubridate")
+
+# read in the data from breath_alcohol_datetimes.csv
+ba_dates <- read_csv("~/Desktop/GitHub Repositories/RPubs/Drunken Datetimes in Ames, Iowa/datasets/breath_alcohol_datetimes.csv")
+
+# change DateTime column to America/Chicago with force_tz
+ba_dates <- ba_dates %>% mutate(DateTime = force_tz( DateTime, "America/Chicago") )
+
+# create a wkday column in the ba_dates 
+ba_dates <- ba_dates %>% mutate(wkday = wday(DateTime, label = T ) )
+
+# create a bar chart of # tests by day of week
+ggplot(data = ba_dates, aes(x = wkday)) + 
+  geom_bar()
+```
+
+## Including Plots
+
