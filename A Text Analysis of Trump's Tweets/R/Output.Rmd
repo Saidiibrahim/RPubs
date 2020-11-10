@@ -1,0 +1,46 @@
+---
+title: "A Text Analysis of Trump's Tweets"
+subtitle: "Apply text mining to Donald Trump's tweets to confirm if he writes the (angrier) Android half"
+author: "Ibrahim Saidi"
+date: "10/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+![](/Users/ibrahim_saidi/Desktop/GitHub Repositories/RPubs/A Text Analysis of Trump's Tweets/datasets/tweet.png)
+
+## R Markdown
+
+When Trump wished the Olympic team good luck, he was tweeting from an iPhone. When he insulted a rival, he was usually tweeting from an Android. Is this an artifact showing which tweets are Trump’s own and which are by some handler in the 2016 campaign?
+
+Others have [explored Trump’s timeline](https://www.cnet.com/news/trumps-tweets-android-for-nasty-iphone-for-nice/) and noticed this tends to hold up. And Trump himself [did indeed tweet from a Samsung Galaxy](https://www.theverge.com/2015/10/5/9453935/donald-trump-twitter-strategy) until [March 2017](https://www.vox.com/2017/5/27/15705090/president-donald-trump-twitter-android-iphone-ios-samsung-galaxy-security-hacking). But how could we examine it quantitatively? During the development of the tidytext R package, I was writing about writing about text mining and sentiment analysis, and this is an excellent opportunity to apply it again.
+
+Let's load the content of Donald Trump’s timeline. Our dataset is from [The Trump Twitter Archive](http://www.trumptwitterarchive.com/) by Brendan Brown, which contains all 35,000+ tweets from the [@realDonaldTrump](https://twitter.com/realDonaldTrump/) Twitter account from 2009 (the year Trump sent his [first tweet](https://www.businessinsider.com/donald-trump-first-tweet-2017-5?r=DE&IR=T)) through 2018. We'll filter it for the election period only, June 1, 2015 through November 8, 2016.
+
+```{r part_1}
+# Load the libraries
+library(dplyr)
+library(readr)
+library(tidyr)
+library(lubridate)
+
+# Read in the data
+tweets <- read_csv("~/Desktop/GitHub Repositories/RPubs/A Text Analysis of Trump's Tweets/datasets/trump_tweets.csv", guess_max = 36000) %>%
+  filter(created_at >= "2015-06-01", created_at <= "2016-11-08" )
+
+# Inspect the first six rows
+head(tweets)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
