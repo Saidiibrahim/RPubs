@@ -7,6 +7,7 @@ output:
     toc: true
     toc_float: true
     code_folding: hide
+    theme: readable
 ---
 
 ```{r setup, include=FALSE}
@@ -15,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 
 ## Just how thirsty is Thursday?
 
-![image by](/Users/ibrahim_saidi/Desktop/GitHub Repositories/RPubs/Drunken Datetimes in Ames, Iowa/images/beer_image.jpeg)
+![image from pexels.com](/Users/ibrahim_saidi/Desktop/GitHub Repositories/RPubs/Drunken Datetimes in Ames, Iowa/images/beer_image.jpeg)
 
 We have previously explored some breathalyzer test data from Ames, Iowa, USA, here. Now, we focus on working with the date and time information in the data. As a college town (Go Cyclones!), Ames has had its fair share of alcohol-related incidents. (For example, Google "VEISHEA riots 2014".) In this project, we examine breath alcohol test data in Ames from January 2013 to December 2017 that is published by the State of Iowa, specifically focusing on when these tests are administered.
 
@@ -84,7 +85,7 @@ ba_summary %>%
 ##  College football
 In the time series, we see many days that have zero breathalyzer tests administered. In the entire five year period, there were at most eight tests in a day. There are many days with three or more tests in a day, and we wonder if the Iowa State football schedule may match up with some of those high test days. We next explore the Iowa State football schedule for 2013-2017. Data were downloaded from [sports-reference.com](https://www.sports-reference.com/cfb/).
 
-![](/Users/ibrahim_saidi/Desktop/GitHub Repositories/RPubs/Drunken Datetimes in Ames, Iowa/images/nfl_image.jpeg)
+![image from pexels.com](/Users/ibrahim_saidi/Desktop/GitHub Repositories/RPubs/Drunken Datetimes in Ames, Iowa/images/nfl_image.jpeg)
 ```{r part_4}
 # read in the football data 
 isu_fb <- read_csv("~/Desktop/GitHub Repositories/RPubs/Drunken Datetimes in Ames, Iowa/datasets/isu_football.csv")

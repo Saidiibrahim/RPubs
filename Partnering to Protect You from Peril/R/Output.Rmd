@@ -6,6 +6,7 @@ output:
   html_document:
     toc: true
     toc_float: true
+    theme: readable
 ---
 
 ```{r setup, include=FALSE}
@@ -25,11 +26,10 @@ To understand the partnerships underlying the public health response to emergenc
 ```{r data_upload}
 
 # load the libraries
-library(readr)
-library(dplyr)
-library(igraph)
-library(ggraph)
-library(RCurl)
+library("readr")
+library("dplyr")
+library("igraph")
+library("ggraph")
 
 # Import the edgelist from the naccho2016clean.csv file
 health_dep_edges <- read_csv(file = "~/Desktop/GitHub Repositories/RPubs/Partnering to Protect You from Peril/datasets/naccho2016clean.csv")
@@ -91,7 +91,7 @@ arrange(health_dep_nodes, -health_dep_degree)
 health_dep_nodes$health_dep_between <- betweenness(health_dep_net)
 
 # List the health departments with the highest betweenness
-arrange(health_dep_nodes, -health_dep_between)
+arrange(health_dep_nodes, -health_dep_between) 
 ```
 ## Connections for regional coordination
 Some disasters are more regional than national and would not require all health departments across the country to be involved. For example, in 2017, Hurricane Harvey poured between 10 and 50 inches of rain in a short period of time across parts of southeastern Texas and southwestern Louisiana. This resulted in widespread flooding across the region and tested the emergency preparedness of health departments and others. Let's use network methods to identify key players and gaps in the network across Texas and Louisiana that might suggest new connections to prepare for future events.
