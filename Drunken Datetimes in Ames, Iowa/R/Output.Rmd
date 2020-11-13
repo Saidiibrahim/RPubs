@@ -6,6 +6,7 @@ output:
   html_document:
     toc: true
     toc_float: true
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -14,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 
 ## Just how thirsty is Thursday?
 
-![](/Users/ibrahim_saidi/Desktop/GitHub Repositories/RPubs/Drunken Datetimes in Ames, Iowa/images/beer_image.jpeg)
+![image by](/Users/ibrahim_saidi/Desktop/GitHub Repositories/RPubs/Drunken Datetimes in Ames, Iowa/images/beer_image.jpeg)
 
 We have previously explored some breathalyzer test data from Ames, Iowa, USA, here. Now, we focus on working with the date and time information in the data. As a college town (Go Cyclones!), Ames has had its fair share of alcohol-related incidents. (For example, Google "VEISHEA riots 2014".) In this project, we examine breath alcohol test data in Ames from January 2013 to December 2017 that is published by the State of Iowa, specifically focusing on when these tests are administered.
 
@@ -31,6 +32,7 @@ First, we create a bar chart showing number of tests by day of the week to see w
 # load necessary packages 
 library("tidyverse")
 library("lubridate")
+library("kableExtra")
 
 # read in the data from breath_alcohol_datetimes.csv
 ba_dates <- read_csv("~/Desktop/GitHub Repositories/RPubs/Drunken Datetimes in Ames, Iowa/datasets/breath_alcohol_datetimes.csv")
@@ -94,7 +96,8 @@ isu_fb <- isu_fb %>% mutate(Date = parse_date(Date, format = "%b %d, %Y"))
 ba_fb <- ba_summary %>% filter(date %in% isu_fb$Date)
 
 # arrange ba_fb by number of tests from high to low and print first six rows 
-ba_fb %>% arrange(desc(n)) %>% head()
+ba_fb %>% arrange(desc(n)) %>% kbl() %>% kable_material_dark()
+
 ```
 
 ## Home vs. away? Win vs. lose?
@@ -143,7 +146,7 @@ v17 <- interval(make_date(2017, 4, 10) , make_date(2017, 4, 16), tzone = "Americ
 veishea <- ba_dates %>% filter(date %within% v13 | date %within% v14 | date %within% v15 | date %within% v16 | date %within% v17 )
 
 # count up years 
-veishea %>% count(yr)
+veishea %>% count(yr) %>% kbl() %>% kable_material_dark()
 ```
 
 ## Looking at BAC
@@ -169,7 +172,7 @@ In the previous ridgeline plot, there are values below zero. This is impossible 
 ba_dates <- ba_dates %>% mutate(zero = res == 0)
 
 # tabulate the data by the zero column
-count(ba_dates, zero)
+count(ba_dates, zero) %>% kbl() %>% kable_material_dark()
 
 # redo ridge with no 0s
 ba_dates %>% filter(res > zero) %>% 
@@ -184,9 +187,7 @@ At a breath alcohol level of 0.16-0.30, a person will experience significant "sp
 While this report has taken a fun and playful tone, it is important to be aware of the seriousness of this issue. According to [research](https://www.niaaa.nih.gov/publications/brochures-and-fact-sheets/alcohol-facts-and-statistics), nearly 2,000 college students die each year from alcohol-related injuries.
 ```{r part_10}
 # filter the ba_dates data to contain only those with the most dangerous result
-danger <- ba_dates %>% filter(res >= 0.31)
+ba_dates %>% filter(res >= 0.31) %>% kbl() %>% kable_material_dark()
 
-# print danger
-print(danger)
 ```
 

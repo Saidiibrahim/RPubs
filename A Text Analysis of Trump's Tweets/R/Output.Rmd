@@ -158,3 +158,97 @@ tweet_words %>%
   coord_flip()
 ```
 
+## Common words: Android vs. iPhone (i)
+Now let’s consider which words are most common from the Android relative to the iPhone, and vice versa. We’ll use the simple measure of log odds ratio for each word, calculated as:
+
+log2(# in Android+1Total #words Android+1# in iPhone+1Total #words iPhone+1)
+log2⁡(# in Android+1Total #words Android+1# in iPhone+1Total #words iPhone+1)
+ 
+
+
+We'll only be looking at words that occur at least five times in both platforms. There will be some instances with fewer than five uses in either the Android or the iPhone, but never one with fewer than five total. If there is one occurrence of a word in the Android, you'll know that there are at least four occurrences in the iPhone for the same word.
+
+The “ +1+1 ”, called [Laplace smoothing](https://en.wikipedia.org/wiki/Additive_smoothing), are to avoid dividing by zero and to put [more trust in common words](http://varianceexplained.org/r/empirical_bayes_baseball/).
+```{r part_8}
+# Create the log odds ratio of each word
+android_iphone_ratios <- tweet_words %>%
+  count(word, source) %>%
+  group_by(word)  %>% 
+  filter(sum(n) >= 5) %>%
+  spread(source, n, fill = 0) %>%
+  ungroup() %>%
+  mutate_if(is.numeric, ~((. + 1) / sum(. + 1))) %>%
+  mutate(logratio = log2(Android / iPhone)) %>%
+  arrange(desc(logratio))
+
+# Inspect the first six rows
+head(android_iphone_ratios)
+```
+## Common words: Android vs. iPhone (ii)
+Now that we've calculated the log odds ratio of each word, we'll plot the 15 words with the greatest log odds ratio for the Android and the iPhone.
+
+With the way we've set up the log odds ratio, positive values are assigned to words from the Android, and negative values are assigned to the iPhone.
+```{r part_9}
+# Plot the log odds ratio for each word by device
+android_iphone_ratios %>%
+  group_by(logratio > 0) %>%
+  top_n(15, abs(logratio)) %>%
+  ungroup() %>%
+  mutate(word = reorder(word, logratio)) %>%
+  ggplot(aes(word, logratio, fill = logratio < 0)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  ylab("Android / iPhone log ratio") +
+  scale_fill_manual(name = "", labels = c("Android", "iPhone"),
+                    values = c("red", "lightblue"))
+```
+
+## Adding sentiments
+
+What do we know so far?
+
+Most hashtags come from the iPhone. Indeed, almost no tweets from Trump's Android contained hashtags, with some rare exceptions like this one. (This is true only because we filtered out the quoted "retweets," as Trump does sometimes quote tweets like this that contain hashtags).
+
+Words like "join" and times like "7 pm", came only from the iPhone. The iPhone is responsible for event announcements like this one ("Join me in Houston, Texas tomorrow night at 7 pm!")
+
+Emotionally charged words, like "poorly," "angry," and "stupid" were more common on Android. This supports the original hypothesis that this is the "angrier" or more hyperbolic account.
+
+Since we’ve observed a difference in word use between the Android and iPhone tweets, let's see if there's a difference in sentiment. We’ll work with the NRC Word-Emotion Association lexicon, available from the tidytext package, which associates words with ten sentiments: positive, negative, anger, anticipation, disgust, fear, joy, sadness, surprise, and trust.
+```{r part_10}
+# Create a sentiment data frame from the NRC lexicon
+nrc <- read_rds("~/Desktop/GitHub Repositories/RPubs/A Text Analysis of Trump's Tweets/datasets/nrc.rds")
+
+# Join the NRC lexicon to log odds ratio data frame
+android_iphone_sentiment <- android_iphone_ratios %>%
+  inner_join(nrc, by = "word") %>%
+  filter(!sentiment %in% c("positive", "negative")) %>%
+  mutate(sentiment = reorder(sentiment, -logratio),
+         word = reorder(word, -logratio)) %>%
+  group_by(sentiment) %>%
+  top_n(10, abs(logratio)) %>%
+  ungroup()
+
+# Inspect the first six rows
+head(android_iphone_sentiment)
+```
+
+## Android vs. iPhone sentiments
+Now we'll take a look at the sentiments of the common words from both devices. We'll see that a lot of words annotated as negative sentiments (with a few exceptions like “crime” and “terrorist”) are more common in Trump’s Android tweets than the campaign’s iPhone tweets.
+```{r part_11}
+# Plot the log odds ratio of words by device in groups sentiments
+ggplot(android_iphone_sentiment, aes(word, logratio, fill = logratio < 0)) +
+  facet_wrap(~ sentiment, scales = "free", nrow = 2) +
+  geom_bar(stat = "identity") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(x = "", y = "Android / iPhone log ratio") +
+  scale_fill_manual(name = "", labels = c("Android", "iPhone"),
+                    values = c("red", "lightblue"))
+```
+
+## Conclusion: The ghost in the political machine
+
+There's a difference in style and sentiment between Trump's tweets from the Android and the iPhone. We know Trump used the Android until March 2017, but who was tweeting from the iPhone on Trump's behalf? I was fascinated by a New Yorker article about Tony Schwartz, Trump’s ghostwriter for The Art of the Deal. Of particular interest was how Schwartz imitated Trump’s voice and philosophy:
+
+In his journal, Schwartz describes the process of trying to make Trump’s voice palatable in the book. It was kind of “a trick,” he writes, to mimic Trump’s blunt, staccato, no-apologies delivery while making him seem almost boyishly appealing…. Looking back at the text now, Schwartz says, “I created a character far more winning than Trump is.”
+
+A lot has been written about Trump’s mental state. But I’d rather get inside the head of the anonymous staffer whose job is to imitate Trump’s unique cadence (“Very sad!”) or put a positive spin on it, to millions of his followers. Are they a true believer, or just a cog in a political machine, mixing whatever mainstream appeal they can into the [@realDonaldTrump](https://twitter.com/realDonaldTrump) concoction? Like Tony Schwartz, will they one day regret their involvement?

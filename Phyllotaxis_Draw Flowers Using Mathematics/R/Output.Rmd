@@ -3,10 +3,7 @@ title: 'Phyllotaxis: Draw Flowers Using Mathematics'
 subtitle: 'Use R to make art and create imaginary flowers inspired by nature'
 author: "Ibrahim Saidi"
 date: "10/11/2020"
-output:
-   html_document:
-    toc: true
-    toc_float: true
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -14,8 +11,6 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 ```
 
 ## Patterns in nature
-
-![](/Users/ibrahim_saidi/Desktop/GitHub Repositories/RPubs/Phyllotaxis_Draw Flowers Using Mathematics/datasets/project_image.jpg)
 
 "The scientist does not study nature because it is useful; he studies it because he delights in it, and he delights in it because it is beautiful." (Henri Poincaré)
 
