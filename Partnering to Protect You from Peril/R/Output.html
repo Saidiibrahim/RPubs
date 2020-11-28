@@ -1549,7 +1549,6 @@ library(&quot;readr&quot;)
 library(&quot;dplyr&quot;)
 library(&quot;igraph&quot;)
 library(&quot;ggraph&quot;)
-library(&quot;kableExtra&quot;)
 
 # Import the edgelist from the naccho2016clean.csv file
 health_dep_edges &lt;- read_csv(file = &quot;~/Desktop/GitHub Repositories/RPubs/Partnering to Protect You from Peril/datasets/naccho2016clean.csv&quot;)
@@ -1564,11 +1563,11 @@ health_dep_net &lt;- graph_from_data_frame(d = health_dep_edges,
 
 # Show the network object
 health_dep_net</code></pre>
-<pre><code>## IGRAPH 4bf692b UN-B 2058 5818 -- 
+<pre><code>## IGRAPH aa15d86 UN-B 2058 5818 -- 
 ## + attr: name (v/c), tobacco (v/n), nutrition (v/n), state (v/c), type
 ## | (v/c), rurality (v/c), population (v/n), leader.tenure (v/n), fte
 ## | (v/n)
-## + edges from 4bf692b (vertex names):
+## + edges from aa15d86 (vertex names):
 ##  [1] AK001--OR024 AK001--AK101 AL038--AL050 AL038--KY032 AL038--AL080
 ##  [6] AL038--TN020 AL038--AL066 AR004--MO048 AR004--OK072 AR005--AR008
 ## [11] AR005--AR044 AR005--AR050 AR005--AR063 AR002--AR006 AR006--AR009

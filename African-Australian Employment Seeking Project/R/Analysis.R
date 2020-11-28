@@ -52,8 +52,7 @@ data_d31 %>%
 levels(data_d31$Job_opportunities_in_South_Australia)
 
 # change factor levels by hand
-
-data_d31 <- data_d31 %>%
+data_d31_recode <- data_d31 %>%
   mutate_at( .vars = vars(Job_opportunities_in_South_Australia, 
                           The_strength_of_your_personal_social_networks,
                           Your_knowledge_about_Australian_culture,
@@ -74,6 +73,20 @@ data_d31 <- data_d31 %>%
              "Very strongly" = "5",
              "No answer" = "6")
 
+# pivoting data into longer format
+
+data_d31_pivot <- data_d31_recode %>%
+  pivot_longer(!responseid, names_to = "question", values_to = "response") %>%
+  select(!responseid) %>%   # remove the responseid column
+  group_by(question, response) %>%
+  count(name = "total") %>%
+  filter(!is.na(response)) %>%   # remove rows with NA values in response column
+  mutate(per = round(100*total/nrow(data_d31_pivot),2))
+
+# Plotting
+ggplot(data = data_d31_pivot, aes(x = question, y = per, fill = response)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  coord_flip()
 
 
 
