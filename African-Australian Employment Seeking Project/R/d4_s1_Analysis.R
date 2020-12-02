@@ -54,6 +54,40 @@ data_d4_d20 <- data %>%
   select("responseid", starts_with(c("d4", "d20")))
 
 # renaiming columns
-new_names_2 <- c("responseid", "Country of birth","Current job",
+new_names_2 <- c("responseid", "Country of birth","CurrentJob",
                "Job2", "Job3", "Job4")
 colnames(data_d4_d20) <- new_names_2
+
+# mutate columns to factor
+data_d4_d20 <- data_d4_d20 %>%
+  mutate_if(is.double, as.factor)
+
+# change country of birth to factor
+data_d4_d20$`Country of birth` <- as.factor(data_d4_d20$`Country of birth`)
+
+# Collapse country names
+data_d4_d20 <- data_d4_d20 %>%
+  mutate(`Country of birth` = fct_collapse(`Country of birth`,
+                                           DR_Congo = c("Congo DRC", "Democratic Republic of Congo",
+                                                        "D.R. Congo", "Republic democratic of Congo",
+                                                        "Congo",  "Congo, DR", "DEM. REP . CONGO", 
+                                                        "DR Congo", "Congo dr", "D. R Congo", 
+                                                        "Democratic republic of Congo", "DRC"),
+                                           South_Sudan = c("South Sudan", "South sudan")))
+
+
+# change factor values
+data_d4_d20 <- data_d4_d20 %>%
+  mutate_at(.vars = vars(CurrentJob, Job2, Job3, Job4),
+            .funs = fct_recode,
+            "Yes" = "1",
+            "No" = "2")
+
+# pivoting data into longer format
+
+data_d4_d20 <- data_d4_d20 %>%
+  pivot_longer(!c(responseid, `Country of birth` ), names_to = "question", values_to = "response") %>%
+  select(!responseid) %>%   # remove the responseid column
+  group_by(question, response, `Country of birth`) %>%
+  count(name = "total") %>%
+  filter(!is.na(response))   # remove rows with NA values in response column
