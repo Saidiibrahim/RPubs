@@ -119,5 +119,3 @@ ggplot(data = data_d4_d20, aes(x = question, y = total, fill = response)) +
   coord_flip()
 
 
-
-
