@@ -88,12 +88,12 @@ data_d4_d20$`Country of birth` <- as.factor(data_d4_d20$`Country of birth`)
 # Collapse country names
 data_d4_d20 <- data_d4_d20 %>%
   mutate(`Country of birth` = fct_collapse(`Country of birth`,
-                                           DR_Congo = c("Congo DRC", "Democratic Republic of Congo",
+                                           `DR Congo` = c("Congo DRC", "Democratic Republic of Congo",
                                                         "D.R. Congo", "Republic democratic of Congo",
                                                         "Congo",  "Congo, DR", "DEM. REP . CONGO", 
                                                         "DR Congo", "Congo dr", "D. R Congo", 
                                                         "Democratic republic of Congo", "DRC"),
-                                           South_Sudan = c("South Sudan", "South sudan")))
+                                           `South Sudan` = c("South Sudan", "South sudan")))
 
 
 # change factor values
