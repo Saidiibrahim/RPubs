@@ -339,6 +339,6 @@ data_age_arrival_d31 <- data_age_arrival_d31 %>%
 
 # Plotting
 ggplot(data = data_age_arrival_d31, aes(x = question, y = Total, fill = response)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  facet_wrap(~ `Recency of arrival`) +
+  geom_bar(stat = "identity", position = position_dodge2("single") ) +
+  facet_wrap(~`Age range`) +
   coord_flip()
