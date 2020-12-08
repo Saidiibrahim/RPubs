@@ -269,18 +269,18 @@ data_age_arrival_d31 <- data %>%
   select(starts_with(c("s0", "d1b", "d31_")))
 
 # renaming column names. Possible with rename_with() and regex?
-age_arrival_names <- c("Age range", "Recency of arrival" , "Job opportunities in South Australia", 
-                 "The strength of your personal social networks",
-                 "Your knowledge about Australian culture",
+age_arrival_names <- c("Age group", "Arrival" , "Job opportunities in South Australia", 
+                 "Strength of personal social networks",
+                 "Knowledge about Australian culture",
                  "Employers knowledge about your culture",
-                 "Your former employment experience",
-                 "Your level of qualification being too high",
-                 "Your level of qualification being to low",
-                 "The country you received your qualification in", "Your race","Your religion",
-                 "Your ethnicity", "Your gender", "Your disability", "Your language or accent",
+                 "Previous employment experience",
+                 "Level of qualification being too high",
+                 "Level of qualification being too low",
+                 "The country you received your qualification in", "Race","Religion",
+                 "Ethnicity", "Gender", "Disability", "Language or accent",
                  "Employers perceptions about Africans in Australia",
-                 "Your limited prior employment interview experience", "Your age","Your visa status",
-                 "Your name", "Your country of birth")
+                 "Limited prior employment interview experience", "Age","Visa status",
+                 "Name", "Country of birth")
 
 colnames(data_age_arrival_d31) <- age_arrival_names
 
@@ -296,17 +296,17 @@ glimpse(data_age_arrival_d31)
 # change factor levels by hand
 data_age_arrival_d31 <- data_age_arrival_d31 %>%
   mutate_at( .vars = vars(`Job opportunities in South Australia`, 
-                          `The strength of your personal social networks`,
-                          `Your knowledge about Australian culture`,
+                          `Strength of personal social networks`,
+                          `Knowledge about Australian culture`,
                           `Employers knowledge about your culture`,
-                          `Your former employment experience`,
-                          `Your level of qualification being too high`,
-                          `Your level of qualification being to low`,
-                          `The country you received your qualification in`, `Your race`,`Your religion`,
-                          `Your ethnicity`, `Your gender`, `Your disability`, `Your language or accent`,
+                          `Previous employment experience`,
+                          `Level of qualification being too high`,
+                          `Level of qualification being too low`,
+                          `The country you received your qualification in`, `Race`,`Religion`,
+                          `Ethnicity`, `Gender`, `Disability`, `Language or accent`,
                           `Employers perceptions about Africans in Australia`,
-                          `Your limited prior employment interview experience`, `Your age`,`Your visa status`,
-                          `Your name`, `Your country of birth`),
+                          `Limited prior employment interview experience`, `Age`,`Visa status`,
+                          `Name`, `Country of birth`),
              .funs = fct_recode, 
              "Not at all" = "1",
              "Slightly" = "2",
@@ -317,7 +317,7 @@ data_age_arrival_d31 <- data_age_arrival_d31 %>%
 
 # change factor levels by hand
 data_age_arrival_d31 <- data_age_arrival_d31 %>%
-  mutate_at( .vars = vars(`Age range`),
+  mutate_at( .vars = vars(`Age group`),
              .funs = fct_recode, 
              "Under 18" = "1",
              "18 - 19" = "2",
@@ -332,13 +332,17 @@ data_age_arrival_d31 <- data_age_arrival_d31 %>%
 
 # pivoting data into longer format
 data_age_arrival_d31 <- data_age_arrival_d31 %>%
-  pivot_longer(!c(`Age range`, `Recency of arrival`), names_to = "question", values_to = "response") %>%
-  group_by(`Age range`, `Recency of arrival`, question, response) %>%
+  select(`Age group`, `Arrival`, `Strength of personal social networks`,
+         `Knowledge about Australian culture`, `Employers knowledge about your culture`,
+         `Race`, `Ethnicity`, `Language or accent`,
+         `Employers perceptions about Africans in Australia`, `Country of birth`) %>%
+  pivot_longer(!c(`Age group`, `Arrival`), names_to = "question", values_to = "response") %>%
+  group_by(`Age group`, `Arrival`, question, response) %>%
   count(name = "Total") %>%
-  filter(!is.na(response))   # remove rows with NA values in response column
+  filter(!is.na(response) & response != "No answer")   # remove rows with NA values in response column
 
 # Plotting
 ggplot(data = data_age_arrival_d31, aes(x = question, y = Total, fill = response)) +
-  geom_bar(stat = "identity", position = position_dodge2("single") ) +
-  facet_wrap(~`Age range`) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
+  facet_wrap(~`Age group`) +
   coord_flip()
