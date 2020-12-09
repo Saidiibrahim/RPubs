@@ -18,10 +18,10 @@ data_d4_s1 <- data %>%
   select("responseid", starts_with(c("s1", "d4")))
 
 # renaiming columns
-new_names <- c("responseid", "Current work status",
+new_names_4 <- c("responseid", "Current work status",
                "Country of birth")
 
-colnames(data_d4_s1) <- new_names
+colnames(data_d4_s1) <- new_names_4
 
 glimpse(data_d4_s1)  # cols 2 is double and col 3 is character
 
@@ -58,7 +58,8 @@ data_d4_s1 <- data_d4_s1 %>%
                                                         "Congo",  "Congo, DR", "DEM. REP . CONGO", 
                                                         "DR Congo", "Congo dr", "D. R Congo", 
                                                         "Democratic republic of Congo", "DRC"),
-                                           `South Sudan` = c("South Sudan", "South sudan")))
+                                           `South Sudan` = c("South Sudan", "South sudan"),
+                                           `Ghana` = "ghana"))
 
 # Plotting
 ggplot(data = data_d4_s1, aes(x = `Current work status`, y = Total,
@@ -74,9 +75,9 @@ data_d4_d20 <- data %>%
   select("responseid", starts_with(c("d4", "d20")))
 
 # renaiming columns
-new_names_2 <- c("responseid", "Country of birth","CurrentJob",
+new_names_5 <- c("responseid", "Country of birth","CurrentJob",
                "Job2", "Job3", "Job4")
-colnames(data_d4_d20) <- new_names_2
+colnames(data_d4_d20) <- new_names_5
 
 # mutate columns to factor
 data_d4_d20 <- data_d4_d20 %>%
@@ -93,7 +94,8 @@ data_d4_d20 <- data_d4_d20 %>%
                                                         "Congo",  "Congo, DR", "DEM. REP . CONGO", 
                                                         "DR Congo", "Congo dr", "D. R Congo", 
                                                         "Democratic republic of Congo", "DRC"),
-                                           `South Sudan` = c("South Sudan", "South sudan")))
+                                           `South Sudan` = c("South Sudan", "South sudan"),
+                                           `Ghana` = "ghana"))
 
 
 # change factor values
