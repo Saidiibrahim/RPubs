@@ -2,6 +2,7 @@
 library(tidyverse)
 library(readxl)
 library(stringr)
+library(ggthemes)
 
 # read in data
 sheets <- excel_sheets("Dataset/RTIS_Migrant Study_11May.xlsx" ) # prints list of sheets
@@ -167,10 +168,14 @@ data_d20_d24a5 <- data_d20_d24a5 %>%
 
 
 # Plotting
-ggplot(data = data_d20_d24a5, aes(x = Question, y = Total, fill = Response)) +
+ggplot(data = data_d20_d24a5, aes(x = `Response`, y = Total, fill = `Job satisfaction`)) +
   geom_bar(stat = "identity", position = "dodge") +
-  facet_wrap(~ `Job satisfaction`) +
-  coord_flip()
+  #geom_text(aes(label = Total), position = position_dodge(0.9),
+  #          vjust=1.2, size=3.5) +
+  facet_wrap(~ `Question`) +
+  coord_flip() +
+  theme_minimal() +
+  labs(title = "Title goes here", subtitle = "subtitle here")
 
 
 

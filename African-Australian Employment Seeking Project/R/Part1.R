@@ -175,7 +175,9 @@ data_d31_d4 <- data_d31_d4 %>%
 ggplot(data = data_d31_d4, aes(x = question, y = Total, fill = response)) +
   geom_bar(stat = "identity", position = "dodge") +
   facet_wrap(~ `Country of birth`) +
-  coord_flip()
+  coord_flip()+
+  theme_minimal()+
+  labs( x = "" ,title = "Title goes here", subtitle = "Subtitle here")
 
 # S1 What is your current work status and each of the sub-questions in D31 -----
 data_d31_s1 <- data %>%
