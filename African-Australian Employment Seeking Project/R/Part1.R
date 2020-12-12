@@ -2,7 +2,8 @@
 # Load necessary packages
 library(tidyverse)
 library(readxl)
-library(stringr)
+library(RColorBrewer)
+library(ggsci)
 
 # read in data
 sheets <- excel_sheets("Dataset/RTIS_Migrant Study_11May.xlsx" ) # prints list of sheets
@@ -77,14 +78,19 @@ data_d31 <- data_d31 %>%
          `Knowledge about Australian culture`, `Employers knowledge about your culture`,
          `Race`, `Ethnicity`, `Language or accent`,
          `Employers perceptions about Africans in Australia`, `Country of birth`) %>%
-  pivot_longer(!responseid, names_to = "question", values_to = "response") %>%
-  group_by(question, response) %>%
+  pivot_longer(!responseid, names_to = "question", values_to = "Response") %>%
+  group_by(question, Response) %>%
   count(name = "Total") %>%
-  filter(!is.na(response) & response != "No answer")   # remove rows with NA values in response column
+  filter(!is.na(Response) & Response != "No answer")   # remove rows with NA values in response column
 
 # Plotting
-ggplot(data = data_d31, aes(x = question, y = Total, fill = response)) +
+ggplot(data = data_d31, aes(x = question, y = Total, fill = Response)) +
   geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_npg()+
+  labs(x = " ",
+       title = "To what extent do you think each of the following have influenced\nyour employment seeking experiences?") +
+  #theme(plot.title = element_text(lineheight=.8, face="bold")) +
+  theme_minimal() +
   coord_flip()
 
 # D4 country of birth and each of the sub-questions in D31 -----
@@ -155,10 +161,10 @@ data_d31_d4 <- data_d31_d4 %>%
          `Knowledge about Australian culture`, `Employers knowledge about your culture`,
          `Race`, `Ethnicity`, `Language or accent`,
          `Employers perceptions about Africans in Australia`, `Your country of birth`, `Country of birth`) %>%
-  pivot_longer(!c(responseid, `Country of birth`), names_to = "question", values_to = "response") %>%
-  group_by(question, response, `Country of birth`) %>%
+  pivot_longer(!c(responseid, `Country of birth`), names_to = "question", values_to = "Response") %>%
+  group_by(question, Response, `Country of birth`) %>%
   count(name = "Total") %>%
-  filter(!is.na(response) & response != "No answer")   # remove rows with NA values in response column
+  filter(!is.na(Response) & Response != "No answer")   # remove rows with NA values in response column
 
 # Collapse country names
 data_d31_d4 <- data_d31_d4 %>%
@@ -172,12 +178,15 @@ data_d31_d4 <- data_d31_d4 %>%
                                            `Ghana` = "ghana"))
 
 # Plotting
-ggplot(data = data_d31_d4, aes(x = question, y = Total, fill = response)) +
+ggplot(data = data_d31_d4, aes(x = question, y = Total, fill = Response)) +
   geom_bar(stat = "identity", position = "dodge") +
   facet_wrap(~ `Country of birth`) +
-  coord_flip()+
-  theme_minimal()+
-  labs( x = "" ,title = "Title goes here", subtitle = "Subtitle here")
+  scale_fill_npg()+
+  labs(x = " ",
+       title = "To what extent do you think each of the following have influenced\nyour employment seeking experiences?") +
+  #theme(plot.title = element_text(lineheight=.8, face="bold")) +
+  theme_minimal() +
+  coord_flip()
 
 # S1 What is your current work status and each of the sub-questions in D31 -----
 data_d31_s1 <- data %>%
@@ -258,17 +267,22 @@ data_d31_s1 <- data_d31_s1 %>%
          `Race`, `Ethnicity`, `Language or accent`,
          `Employers perceptions about Africans in Australia`, `Country of birth`,
          `Current work status`) %>%
-  pivot_longer(!c(responseid, `Current work status`), names_to = "question", values_to = "response") %>%
+  pivot_longer(!c(responseid, `Current work status`), names_to = "question", values_to = "Response") %>%
   select(!responseid) %>%   # remove the responseid column
-  group_by(question, response, `Current work status`) %>%
+  group_by(question, Response, `Current work status`) %>%
   count(name = "Total") %>%
-  filter(!is.na(response) & response != "No answer")  # remove rows with NA values in response column
+  filter(!is.na(Response) & Response != "No answer")  # remove rows with NA values in response column
 
 
 # Plotting
-ggplot(data = data_d31_s1, aes(x = question, y = Total, fill = response)) +
+ggplot(data = data_d31_s1, aes(x = question, y = Total, fill = Response)) +
   geom_bar(stat = "identity", position = "dodge") +
   facet_wrap(~ `Current work status`) +
+  scale_fill_npg()+
+  labs(x = " ",
+       title = "To what extent do you think each of the following have influenced\nyour employment seeking experiences?") +
+  #theme(plot.title = element_text(lineheight=.8, face="bold")) +
+  theme_minimal() +
   coord_flip()
 
 # Age, recency of arrival and the variables in d31 -----
@@ -343,13 +357,19 @@ data_age_arrival_d31 <- data_age_arrival_d31 %>%
          `Knowledge about Australian culture`, `Employers knowledge about your culture`,
          `Race`, `Ethnicity`, `Language or accent`,
          `Employers perceptions about Africans in Australia`, `Country of birth`) %>%
-  pivot_longer(!c(`Age group`, `Arrival`), names_to = "question", values_to = "response") %>%
-  group_by(`Age group`, `Arrival`, question, response) %>%
+  pivot_longer(!c(`Age group`, `Arrival`), names_to = "question", values_to = "Response") %>%
+  group_by(`Age group`, `Arrival`, question, Response) %>%
   count(name = "Total") %>%
-  filter(!is.na(response) & response != "No answer")   # remove rows with NA values in response column
+  filter(!is.na(Response) & Response != "No answer")   # remove rows with NA values in response column
 
 # Plotting
-ggplot(data = data_age_arrival_d31, aes(x = question, y = Total, fill = response)) +
+ggplot(data = data_age_arrival_d31, aes(x = question, y = Total, fill = Response)) +
   geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
   facet_wrap(~`Age group`) +
+  scale_fill_npg()+
+  labs(x = " ",
+       title = "To what extent do you think each of the following have influenced\nyour employment seeking experiences?",
+       subtitle = "Response per age group") +
+  #theme(plot.title = element_text(lineheight=.8, face="bold")) +
+  theme_minimal() +
   coord_flip()

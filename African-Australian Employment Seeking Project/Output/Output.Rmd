@@ -1,0 +1,106 @@
+---
+title: "Data analysis"
+author: "Ibrahim Saidi"
+date: "12/12/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Part 1
+
+Notes
+
+```{r loading, echo=FALSE}
+# Load necessary packages
+library(tidyverse)
+library(readxl)
+
+# read in data
+data <- read_xlsx("~/Desktop/RTIS_Migrant Study_11May.xlsx") %>% as.data.frame() # converting to dataframe
+```
+
+## D31 To what extent do you think each of the following have influenced your employment seeking experiences
+
+You can also embed plots, for example:
+
+```{r d31, echo=FALSE}
+# D31 To what extent do you think each of the following have influenced your employment seeking experiences ------
+data_d31 <- data %>%
+  select("responseid", starts_with("d31_"))
+
+data_d31_ref <- data %>%
+  select("responseid", starts_with("d31_")) # will use this to check colnames changes 
+
+# renaming column names. Possible with rename_with() and regex?
+new_names <- c("responseid", "Job opportunities in South Australia", 
+               "Strength of personal social networks",
+               "Knowledge about Australian culture",
+               "Employers knowledge about your culture",
+               "Previous employment experience",
+               "Level of qualification being too high",
+               "Level of qualification being too low",
+               "The country you received your qualification in", "Race","Religion",
+               "Ethnicity", "Gender", "Disability", "Language or accent",
+               "Employers perceptions about Africans in Australia",
+               "Limited prior employment interview experience", "Age","Visa status",
+               "Name", "Country of birth")
+
+colnames(data_d31) <- new_names # converts column names to those above
+#Check if one of the column is numeric
+is.numeric(data_d31$`Job opportunities in South Australia`) # returns TRUE (str(data_31) returns numeric for all columns)
+# convert all columns, except first one, to factor
+data_d31 <- data_d31 %>%
+  mutate_if(is.double, as.factor)
+
+glimpse(data_d31) # now all columns are factors
+
+# get number of levels for every factor variable
+data_d31 %>%
+  summarise_if(is.factor, nlevels)
+
+# get levels of one column
+levels(data_d31$`Job opportunities in South Australia`)
+
+# change factor levels by hand
+data_d31 <- data_d31 %>%
+  mutate_at( .vars = vars(`Job opportunities in South Australia`, 
+                          `Strength of personal social networks`,
+                          `Knowledge about Australian culture`,
+                          `Employers knowledge about your culture`,
+                          `Previous employment experience`,
+                          `Level of qualification being too high`,
+                          `Level of qualification being too low`,
+                          `The country you received your qualification in`, `Race`,`Religion`,
+                          `Ethnicity`, `Gender`, `Disability`, `Language or accent`,
+                          `Employers perceptions about Africans in Australia`,
+                          `Limited prior employment interview experience`, `Age`,`Visa status`,
+                          `Name`, `Country of birth`),
+             .funs = fct_recode, 
+             "Not at all" = "1",
+             "Slightly" = "2",
+             "Moderately" = "3",
+             "Strongly" = "4",
+             "Very strongly" = "5",
+             "No answer" = "6")
+
+# pivoting data into longer format
+
+data_d31 <- data_d31 %>%
+  select( `responseid`, `Strength of personal social networks`,
+         `Knowledge about Australian culture`, `Employers knowledge about your culture`,
+         `Race`, `Ethnicity`, `Language or accent`,
+         `Employers perceptions about Africans in Australia`, `Country of birth`) %>%
+  pivot_longer(!responseid, names_to = "question", values_to = "response") %>%
+  group_by(question, response) %>%
+  count(name = "Total") %>%
+  filter(!is.na(response) & response != "No answer")   # remove rows with NA values in response column
+
+# Plotting
+ggplot(data = data_d31, aes(x = question, y = Total, fill = response)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  coord_flip()
+```
+
