@@ -89,8 +89,7 @@ ggplot(data = data_d31, aes(x = question, y = Total, fill = Response)) +
   scale_fill_npg()+
   labs(x = " ",
        title = "To what extent do you think each of the following have influenced\nyour employment seeking experiences?") +
-  #theme(plot.title = element_text(lineheight=.8, face="bold")) +
-  theme_minimal() +
+  theme(plot.title = element_text(lineheight=.8, face="bold")) +
   coord_flip()
 
 # D4 country of birth and each of the sub-questions in D31 -----

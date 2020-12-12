@@ -62,6 +62,11 @@ data_d30 <- data_d30 %>%
 # Plotting
 ggplot(data = data_d30, aes(x = Question, y = Total, fill = Response)) +
   geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_npg()+
+  labs(x = " ",
+       title = "Based on your most recent experience in applying for a job, please\nrate your level of agreement with the following statements") +
+  #theme(plot.title = element_text(lineheight=.8, face="bold")) +
+  theme_minimal() +
   coord_flip()
 
 
@@ -121,6 +126,11 @@ data_d38_d20 <- data_d38_d20 %>%
 ggplot(data = data_d38_d20, aes(x = Question, y = Total, fill = Response)) +
   geom_bar(stat = "identity", position = "dodge") +
   facet_wrap(~ `Country of highest education`) +
+  scale_fill_npg()+
+  labs(x = " ",
+       title = "Country of highest level of education and are any of your\nof your qualifications required at each of your jobs") +
+  #theme(plot.title = element_text(lineheight=.8, face="bold")) +
+  theme_minimal() +
   coord_flip()
 
 # D20 are your qualifications required at each of your jobs and D24a_5 ----
@@ -173,9 +183,12 @@ ggplot(data = data_d20_d24a5, aes(x = `Response`, y = Total, fill = `Job satisfa
   #geom_text(aes(label = Total), position = position_dodge(0.9),
   #          vjust=1.2, size=3.5) +
   facet_wrap(~ `Question`) +
-  coord_flip() +
+  scale_fill_npg()+
+  labs(x = " ",
+       title = "Are any of your nof your qualifications required at each of your jobs and\n overall job satisfaction") +
+  #theme(plot.title = element_text(lineheight=.8, face="bold")) +
   theme_minimal() +
-  labs(title = "Title goes here", subtitle = "subtitle here")
+  coord_flip()
 
 
 

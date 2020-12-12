@@ -65,6 +65,11 @@ data_d4_s1 <- data_d4_s1 %>%
 ggplot(data = data_d4_s1, aes(x = `Current work status`, y = Total,
   fill = `Country of birth`)) +
   geom_bar(stat = "identity", position = "dodge") +
+  #scale_fill_futurama()+
+  labs(x = " ",
+       title = "Country of birth and current work status") +
+  #theme(plot.title = element_text(lineheight=.8, face="bold")) +
+  theme_minimal() +
   coord_flip()
 
 # Country of birth and Qualifications required at each of your jobs ----
@@ -108,16 +113,21 @@ data_d4_d20 <- data_d4_d20 %>%
 # pivoting data into longer format
 
 data_d4_d20 <- data_d4_d20 %>%
-  pivot_longer(!c(responseid, `Country of birth` ), names_to = "question", values_to = "response") %>%
+  pivot_longer(!c(responseid, `Country of birth` ), names_to = "question", values_to = "Response") %>%
   select(!responseid) %>%   # remove the responseid column
-  group_by(question, response, `Country of birth`) %>%
+  group_by(question, Response, `Country of birth`) %>%
   count(name = "total") %>%
-  filter(!is.na(response))   # remove rows with NA values in response column
+  filter(!is.na(Response))   # remove rows with NA values in response column
 
 # Plotting
-ggplot(data = data_d4_d20, aes(x = question, y = total, fill = response)) +
+ggplot(data = data_d4_d20, aes(x = question, y = total, fill = Response)) +
   geom_bar(stat = "identity", position = "dodge") +
   facet_wrap(~ `Country of birth`) +
+  #scale_fill_futurama()+
+  labs(x = " ", y = "Total",
+       title = "Country of birth and current work status") +
+  #theme(plot.title = element_text(lineheight=.8, face="bold")) +
+  theme_minimal() +
   coord_flip()
 
 
